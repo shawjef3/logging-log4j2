@@ -366,7 +366,7 @@ public class MutableLogEvent implements LogEvent, ReusableMessage, ParameterVisi
         if (loggerFqcn == null || !includeLocation) {
             return null;
         }
-        source = new SourceLocation(StackLocatorUtil.calcLocation(loggerFqcn));
+        source = SourceLocation.valueOf(StackLocatorUtil.calcLocation(loggerFqcn));
         return source;
     }
 

@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LoggingException;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
+import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.util.FilteredObjectInputStream;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -155,7 +156,7 @@ public class LogEventTest {
 
     @Test
     public void testLocation() {
-        final StackTraceElement ste = TESTER.getEventSource(this.getClass().getName());
+        final SourceLocation ste = TESTER.getEventSource(this.getClass().getName());
         assertNotNull("No StackTraceElement", ste);
         assertEquals("Incorrect event", this.getClass().getName(), ste.getClassName());
     }
@@ -163,7 +164,7 @@ public class LogEventTest {
     private static class TestClass {
         private static final String FQCN = TestClass.class.getName();
 
-        public StackTraceElement getEventSource(final String loggerName) {
+        public SourceLocation getEventSource(final String loggerName) {
             final LogEvent event = Log4jLogEvent.newBuilder().setLoggerName(loggerName)
                     .setLoggerFqcn(FQCN).setLevel(Level.INFO).setMessage(MESSAGE).build();
             event.setIncludeLocation(true);

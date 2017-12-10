@@ -37,6 +37,7 @@ import org.apache.logging.log4j.core.util.DummyNanoClock;
 import org.apache.logging.log4j.core.util.SystemNanoClock;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.apache.logging.log4j.util.StringMap;
+import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.Before;
 import org.junit.Test;
@@ -111,7 +112,7 @@ public class PatternParserTest {
                 .setMessage(new SimpleMessage("Hello, world")) //
                 .setContextData(mdc) //
                 .setThreadName("Thread1") //
-                .setSource(elements[0])
+                .setSource(SourceLocation.valueOf(elements[0]))
                 .setTimeMillis(System.currentTimeMillis()).build();
         final StringBuilder buf = new StringBuilder();
         for (final PatternFormatter formatter : formatters) {
@@ -181,7 +182,7 @@ public class PatternParserTest {
                 .setLevel(Level.INFO) //
                 .setMessage(new SimpleMessage("Hello, world")) //
                 .setThreadName("Thread1") //
-                .setSource(elements[0]) //
+                .setSource(SourceLocation.valueOf(elements[0])) //
                 .setTimeMillis(timestamp) //
                 .build();
         final StringBuilder buf = new StringBuilder();

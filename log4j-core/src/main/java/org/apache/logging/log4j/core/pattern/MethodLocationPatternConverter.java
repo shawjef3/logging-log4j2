@@ -18,6 +18,8 @@ package org.apache.logging.log4j.core.pattern;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.message.SourceLocation;
+
 import org.apache.logging.log4j.core.impl.LocationAware;
 
 /**
@@ -54,7 +56,7 @@ public final class MethodLocationPatternConverter extends LogEventPatternConvert
      */
     @Override
     public void format(final LogEvent event, final StringBuilder toAppendTo) {
-        final StackTraceElement element = event.getSource();
+        final SourceLocation element = event.getSource();
 
         if (element != null) {
             toAppendTo.append(element.getMethodName());
