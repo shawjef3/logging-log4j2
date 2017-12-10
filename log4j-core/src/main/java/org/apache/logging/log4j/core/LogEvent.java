@@ -26,6 +26,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 /**
@@ -150,7 +151,7 @@ public interface LogEvent extends Serializable {
      *
      * @return source of logging request, may be null.
      */
-    StackTraceElement getSource();
+    SourceLocation getSource();
 
     /**
      * Gets the thread name.

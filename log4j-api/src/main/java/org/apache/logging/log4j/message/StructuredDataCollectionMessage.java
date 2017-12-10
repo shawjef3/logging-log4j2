@@ -101,9 +101,9 @@ public class StructuredDataCollectionMessage implements StringBuilderFormattable
     }
 
     @Override
-    public StackTraceElement getSource() {
+    public SourceLocation getSource() {
         for (StructuredDataMessage msg : structuredDataMessageList) {
-            StackTraceElement t = msg.getSource();
+            SourceLocation t = msg.getSource();
             if (t != null) {
                 return t;
             }

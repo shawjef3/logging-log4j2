@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.apache.logging.log4j.message.*;
 import org.apache.logging.log4j.junit.StatusLoggerRule;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.ObjectMessage;
@@ -1350,7 +1351,7 @@ public class AbstractLoggerTest {
         }
 
         @Override
-        public StackTraceElement getSource() {
+        public SourceLocation getSource() {
             return null;
         }
     }
