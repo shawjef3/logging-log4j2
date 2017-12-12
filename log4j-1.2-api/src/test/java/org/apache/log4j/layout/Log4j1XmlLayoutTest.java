@@ -23,6 +23,7 @@ import org.apache.logging.log4j.core.impl.ContextDataFactory;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.junit.ThreadContextRule;
 import org.apache.logging.log4j.message.SimpleMessage;
+import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.util.StringMap;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,7 +67,7 @@ public class Log4j1XmlLayoutTest {
                 .setMessage(new SimpleMessage("Hello, World"))
                 .setTimeMillis(System.currentTimeMillis() + 17)
                 .setIncludeLocation(true)
-                .setSource(new StackTraceElement("pack.MyClass", "myMethod", "MyClass.java", 17))
+                .setSource(new SourceLocation("pack.MyClass", "myMethod", "MyClass.java", 17))
                 .setContextData(contextMap)
                 .build();
 
