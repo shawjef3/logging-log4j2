@@ -121,8 +121,7 @@ public class MapMessage<M extends MapMessage<M, V>, V> implements MultiFormatStr
      * @param  initialCapacity the initial capacity.
      */
     public MapMessage(final int initialCapacity) {
-        this.data = new SortedArrayStringMap(initialCapacity);
-        this.source = null;
+        this(null, initialCapacity);
     }
 
     /**
@@ -130,7 +129,7 @@ public class MapMessage<M extends MapMessage<M, V>, V> implements MultiFormatStr
      *
      * @param  initialCapacity the initial capacity.
      */
-    public MapMessage(final int initialCapacity, SourceLocation source) {
+    public MapMessage(final SourceLocation source, final int initialCapacity) {
         this.data = new SortedArrayStringMap(initialCapacity);
         this.source = source;
     }
@@ -140,15 +139,14 @@ public class MapMessage<M extends MapMessage<M, V>, V> implements MultiFormatStr
      * @param map The Map.
      */
     public MapMessage(final Map<String, V> map) {
-        this.data = new SortedArrayStringMap(map);
-        this.source = null;
+        this(null, map);
     }
 
     /**
      * Constructs a new instance based on an existing Map.
      * @param map The Map.
      */
-    public MapMessage(final Map<String, V> map, SourceLocation source) {
+    public MapMessage(final SourceLocation source, final Map<String, V> map) {
         this.data = new SortedArrayStringMap(map);
         this.source = source;
     }
