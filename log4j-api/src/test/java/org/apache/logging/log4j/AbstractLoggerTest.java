@@ -1351,7 +1351,7 @@ public class AbstractLoggerTest {
         }
 
         @Override
-        public SourceLocation getSource() {
+        public StackTraceElement getSource() {
             return null;
         }
     }

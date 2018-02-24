@@ -68,7 +68,7 @@ public class Log4j1XmlLayoutTest {
                 .setTimeMillis(System.currentTimeMillis() + 17)
                 .setIncludeLocation(true)
                 .setSource(new SourceLocation("pack.MyClass", "myMethod", "MyClass.java", 17))
-                .setContextData(contextMap)
+                .setContextMap(contextMap)
                 .build();
 
         final String result = layout.toSerializable(event);

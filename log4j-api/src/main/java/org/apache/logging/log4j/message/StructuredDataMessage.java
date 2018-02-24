@@ -74,7 +74,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @param msg The message.
      * @param type The message type.
      */
-    public StructuredDataMessage(final String id, final String msg, final String type, SourceLocation source) {
+    public StructuredDataMessage(final String id, final String msg, final String type, StackTraceElement source) {
         this(id, msg, type, MAX_LENGTH, source);
     }
 
@@ -103,7 +103,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @param maxLength The maximum length of keys;
      * @since 2.9
      */
-    public StructuredDataMessage(final String id, final String msg, final String type, final int maxLength, final SourceLocation source) {
+    public StructuredDataMessage(final String id, final String msg, final String type, final int maxLength, final StackTraceElement source) {
         super(source);
         this.id = new StructuredDataId(id, null, null, maxLength);
         this.message = msg;
@@ -133,7 +133,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @param data The StructuredData map.
      */
     public StructuredDataMessage(final String id, final String msg, final String type,
-                                 final Map<String, String> data, SourceLocation source) {
+                                 final Map<String, String> data, StackTraceElement source) {
         this(id, msg, type, data, MAX_LENGTH, source);
     }
 
@@ -167,7 +167,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @since 2.9
      */
     public StructuredDataMessage(final String id, final String msg, final String type,
-                                 final Map<String, String> data, final int maxLength, SourceLocation source) {
+                                 final Map<String, String> data, final int maxLength, StackTraceElement source) {
         super(source, data);
         this.id = new StructuredDataId(id, null, null, maxLength);
         this.message = msg;
@@ -191,7 +191,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @param msg The message.
      * @param type The message type.
      */
-    public StructuredDataMessage(final StructuredDataId id, final String msg, final String type, SourceLocation source) {
+    public StructuredDataMessage(final StructuredDataId id, final String msg, final String type, StackTraceElement source) {
         this(id, msg, type, MAX_LENGTH, source);
     }
 
@@ -218,7 +218,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @param maxLength The maximum length of keys;
      * @since 2.9
      */
-    public StructuredDataMessage(final StructuredDataId id, final String msg, final String type, final int maxLength, SourceLocation source) {
+    public StructuredDataMessage(final StructuredDataId id, final String msg, final String type, final int maxLength, StackTraceElement source) {
         super(source);
         this.id = id;
         this.message = msg;
@@ -248,7 +248,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @param data The StructuredData map.
      */
     public StructuredDataMessage(final StructuredDataId id, final String msg, final String type,
-                                 final Map<String, String> data, SourceLocation source) {
+                                 final Map<String, String> data, StackTraceElement source) {
         this(id, msg, type, data, MAX_LENGTH, source);
     }
 
@@ -282,7 +282,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @since 2.9
      */
     public StructuredDataMessage(final StructuredDataId id, final String msg, final String type,
-                                 final Map<String, String> data, final int maxLength, SourceLocation source) {
+                                 final Map<String, String> data, final int maxLength, StackTraceElement source) {
         super(source, data);
         this.id = id;
         this.message = msg;
@@ -309,7 +309,7 @@ public class StructuredDataMessage extends MapMessage<StructuredDataMessage, Str
      * @param msg The StructuredDataMessage.
      * @param map The StructuredData map.
      */
-    private StructuredDataMessage(final StructuredDataMessage msg, final Map<String, String> map, SourceLocation source) {
+    private StructuredDataMessage(final StructuredDataMessage msg, final Map<String, String> map, StackTraceElement source) {
         super(source, map);
         this.id = msg.id;
         this.message = msg.message;

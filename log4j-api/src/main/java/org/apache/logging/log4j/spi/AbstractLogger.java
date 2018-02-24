@@ -177,7 +177,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public void catching(SourceLocation source, Level level, Throwable t) {
+    public void catching(StackTraceElement source, Level level, Throwable t) {
         catching(source, FQCN, level, t);
     }
 
@@ -188,7 +188,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param level The logging level.
      * @param t The Throwable.
      */
-    protected void catching(final SourceLocation source, final String fqcn, final Level level, final Throwable t) {
+    protected void catching(final StackTraceElement source, final String fqcn, final Level level, final Throwable t) {
         if (isEnabled(level, CATCHING_MARKER, (Object) null, null)) {
             logMessageSafely(fqcn, level, CATCHING_MARKER, catchingMsg(source, t), t);
         }
@@ -196,17 +196,17 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
 
     @Override
     public void catching(final Throwable t) {
-        catching((SourceLocation) null, t);
+        catching((StackTraceElement) null, t);
     }
 
     @Override
-    public void catching(SourceLocation source, Throwable t) {
+    public void catching(StackTraceElement source, Throwable t) {
         if (isEnabled(Level.ERROR, CATCHING_MARKER, (Object) null, null)) {
             logMessageSafely(FQCN, Level.ERROR, CATCHING_MARKER, catchingMsg(source, t), t);
         }
     }
 
-    protected Message catchingMsg(final SourceLocation source, final Throwable t) {
+    protected Message catchingMsg(final StackTraceElement source, final Throwable t) {
         return messageFactory.newMessage(source, CATCHING);
     }
 
@@ -524,7 +524,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param format Format String for the parameters.
      * @param paramSuppliers The Suppliers of the parameters.
      */
-    protected EntryMessage enter(final SourceLocation source, final String fqcn, final String format, final Supplier<?>... paramSuppliers) {
+    protected EntryMessage enter(final StackTraceElement source, final String fqcn, final String format, final Supplier<?>... paramSuppliers) {
         EntryMessage entryMsg = null;
         if (isEnabled(Level.TRACE, ENTRY_MARKER, (Object) null, null)) {
             logMessageSafely(fqcn, Level.TRACE, ENTRY_MARKER, entryMsg = entryMsg(source, format, paramSuppliers), null);
@@ -540,7 +540,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param paramSuppliers The parameters to the method.
      */
     @Deprecated
-    protected EntryMessage enter(final SourceLocation source, final String fqcn, final String format, final MessageSupplier... paramSuppliers) {
+    protected EntryMessage enter(final StackTraceElement source, final String fqcn, final String format, final MessageSupplier... paramSuppliers) {
         EntryMessage entryMsg = null;
         if (isEnabled(Level.TRACE, ENTRY_MARKER, (Object) null, null)) {
             logMessageSafely(fqcn, Level.TRACE, ENTRY_MARKER, entryMsg = entryMsg(source, format, paramSuppliers), null);
@@ -555,7 +555,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param format The format String for the parameters.
      * @param params The parameters to the method.
      */
-    protected EntryMessage enter(final SourceLocation source, final String fqcn, final String format, final Object... params) {
+    protected EntryMessage enter(final StackTraceElement source, final String fqcn, final String format, final Object... params) {
         EntryMessage entryMsg = null;
         if (isEnabled(Level.TRACE, ENTRY_MARKER, (Object) null, null)) {
             logMessageSafely(fqcn, Level.TRACE, ENTRY_MARKER, entryMsg = entryMsg(source, format, params), null);
@@ -587,7 +587,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      *            the Message.
      * @since 2.6
      */
-    protected EntryMessage enter(final SourceLocation source, final String fqcn, final Message message) {
+    protected EntryMessage enter(final StackTraceElement source, final String fqcn, final Message message) {
         EntryMessage flowMessage = null;
         if (isEnabled(Level.TRACE, ENTRY_MARKER, (Object) null, null)) {
             logMessageSafely(fqcn, Level.TRACE, ENTRY_MARKER, flowMessage = flowMessageFactory.newEntryMessage(source, message),
@@ -613,7 +613,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param fqcn The fully qualified class name of the <b>caller</b>.
      * @param params The parameters to the method.
      */
-    protected void entry(final SourceLocation source, final String fqcn, final Object... params) {
+    protected void entry(final StackTraceElement source, final String fqcn, final Object... params) {
         if (isEnabled(Level.TRACE, ENTRY_MARKER, (Object) null, null)) {
             if (params == null) {
                 logMessageSafely(fqcn, Level.TRACE, ENTRY_MARKER, entryMsg(source, null, (Supplier<?>[]) null), null);
@@ -623,7 +623,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
         }
     }
 
-    protected EntryMessage entryMsg(final SourceLocation source, final String format, final Object... params) {
+    protected EntryMessage entryMsg(final StackTraceElement source, final String format, final Object... params) {
         final int count = params == null ? 0 : params.length;
         if (count == 0) {
             if (Strings.isEmpty(format)) {
@@ -647,7 +647,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
         return flowMessageFactory.newEntryMessage(source, new SimpleMessage(sb));
     }
 
-    protected EntryMessage entryMsg(final SourceLocation source, final String format, final MessageSupplier... paramSuppliers) {
+    protected EntryMessage entryMsg(final StackTraceElement source, final String format, final MessageSupplier... paramSuppliers) {
         final int count = paramSuppliers == null ? 0 : paramSuppliers.length;
         final Object[] params = new Object[count];
         for (int i = 0; i < count; i++) {
@@ -657,7 +657,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
         return entryMsg(source, format, params);
     }
 
-    protected EntryMessage entryMsg(final SourceLocation source, final String format, final Supplier<?>... paramSuppliers) {
+    protected EntryMessage entryMsg(final StackTraceElement source, final String format, final Supplier<?>... paramSuppliers) {
         final int count = paramSuppliers == null ? 0 : paramSuppliers.length;
         final Object[] params = new Object[count];
         for (int i = 0; i < count; i++) {

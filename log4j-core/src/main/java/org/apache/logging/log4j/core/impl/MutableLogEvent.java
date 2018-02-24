@@ -62,7 +62,7 @@ public class MutableLogEvent implements LogEvent, ReusableMessage, ParameterVisi
     private StringMap contextData = ContextDataFactory.createContextData();
     private Marker marker;
     private String loggerFqcn;
-    private SourceLocation source;
+    private StackTraceElement source;
     private ThreadContext.ContextStack contextStack;
     transient boolean reserved = false;
 
@@ -354,25 +354,25 @@ public class MutableLogEvent implements LogEvent, ReusableMessage, ParameterVisi
     }
 
     /**
-     * Returns the SourceLocation for the caller. This will be the entry that occurs right
+     * Returns the StackTraceElement for the caller. This will be the entry that occurs right
      * before the first occurrence of FQCN as a class name.
-     * @return the SourceLocation for the caller.
+     * @return the StackTraceElement for the caller.
      */
     @Override
-    public SourceLocation getSource() {
+    public StackTraceElement getSource() {
         if (source != null) {
             return source;
         }
         if (loggerFqcn == null || !includeLocation) {
             return null;
         }
-        source = SourceLocation.valueOf(StackLocatorUtil.calcLocation(loggerFqcn));
+        source = StackLocatorUtil.calcLocation(loggerFqcn);
         return source;
     }
 
     @Override
-    public SourceLocation swapSource(SourceLocation source) {
-        SourceLocation originalSource = this.source;
+    public StackTraceElement swapSource(StackTraceElement source) {
+        StackTraceElement originalSource = this.source;
         this.source = source;
         return originalSource;
     }

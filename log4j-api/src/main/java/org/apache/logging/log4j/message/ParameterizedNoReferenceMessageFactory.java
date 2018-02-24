@@ -49,13 +49,13 @@ public final class ParameterizedNoReferenceMessageFactory extends AbstractMessag
         private static final long serialVersionUID = 4199272162767841280L;
         private final String formattedMessage;
         private final Throwable throwable;
-        private final SourceLocation source;
+        private final StackTraceElement source;
 
         public StatusMessage(final String formattedMessage, final Throwable throwable) {
             this(null, formattedMessage, throwable);
         }
 
-        public StatusMessage(SourceLocation source,final String formattedMessage, final Throwable throwable) {
+        public StatusMessage(StackTraceElement source,final String formattedMessage, final Throwable throwable) {
             this.formattedMessage = formattedMessage;
             this.throwable = throwable;
             this.source = source;
@@ -82,7 +82,7 @@ public final class ParameterizedNoReferenceMessageFactory extends AbstractMessag
         }
 
         @Override
-        public SourceLocation getSource() {
+        public StackTraceElement getSource() {
             return source;
         }
     }
@@ -110,7 +110,7 @@ public final class ParameterizedNoReferenceMessageFactory extends AbstractMessag
      */
     @Override
     public Message newMessage(final String message, final Object... params) {
-        return newMessage((SourceLocation) null, message, params);
+        return newMessage((StackTraceElement) null, message, params);
     }
 
     /**
@@ -122,10 +122,10 @@ public final class ParameterizedNoReferenceMessageFactory extends AbstractMessag
      * @param params The message parameters.
      * @return The Message.
      *
-     * @see MessageFactory#newMessage(SourceLocation, String, Object...)
+     * @see MessageFactory#newMessage(StackTraceElement, String, Object...)
      */
     @Override
-    public Message newMessage(SourceLocation source, String message, Object... params) {
+    public Message newMessage(StackTraceElement source, String message, Object... params) {
         if (params == null) {
             return new SimpleMessage(source, message);
         }

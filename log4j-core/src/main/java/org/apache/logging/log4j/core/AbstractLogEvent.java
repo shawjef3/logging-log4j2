@@ -27,7 +27,6 @@ import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.core.time.MutableInstant;
 import org.apache.logging.log4j.message.Message;
-import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 
@@ -92,7 +91,7 @@ public abstract class AbstractLogEvent implements LogEvent {
     }
 
     @Override
-    public SourceLocation getSource() {
+    public StackTraceElement getSource() {
         return null;
     }
 

@@ -30,7 +30,6 @@ import org.apache.logging.log4j.core.appender.db.jpa.converter.*;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.message.Message;
-import org.apache.logging.log4j.message.SourceLocation;
 
 /**
  * Users of the JPA appender may want to extend this class instead of {@link AbstractLogEventWrapperEntity}. This class
@@ -113,7 +112,7 @@ public abstract class BasicLogEventEntity extends AbstractLogEventWrapperEntity 
      */
     @Override
     @Convert(converter = StackTraceElementAttributeConverter.class)
-    public SourceLocation getSource() {
+    public StackTraceElement getSource() {
         return this.getWrappedEvent().getSource();
     }
 

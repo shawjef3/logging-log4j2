@@ -37,7 +37,6 @@ import org.apache.logging.log4j.core.util.NanoClock;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.ReusableMessage;
-import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.StackLocatorUtil;
@@ -306,13 +305,13 @@ public class AsyncLogger extends Logger implements EventTranslatorVararg<RingBuf
      * @param fqcn fully qualified caller name.
      * @return the caller location if requested, {@code null} otherwise.
      */
-    private SourceLocation calcLocationIfRequested(final String fqcn, final Message message) {
+    private StackTraceElement calcLocationIfRequested(final String fqcn, final Message message) {
         // location: very expensive operation. LOG4J2-153:
         // Only include if "includeLocation=true" is specified,
         // exclude if not specified or if "false" was specified.
-        SourceLocation messageSource = message.getSource();
+        StackTraceElement messageSource = message.getSource();
         return messageSource == null ?
-                (includeLocation ? SourceLocation.valueOf(StackLocatorUtil.calcLocation(fqcn)) : null) :
+                (includeLocation ? StackLocatorUtil.calcLocation(fqcn) : null) :
                 messageSource;
     }
 
@@ -341,7 +340,7 @@ public class AsyncLogger extends Logger implements EventTranslatorVararg<RingBuf
         if (!isReused(message)) {
             InternalAsyncUtil.makeMessageImmutable(message);
         }
-        SourceLocation location = null;
+        StackTraceElement location = null;
         // calls the translateTo method on this AsyncLogger
         if (!disruptor.getRingBuffer().tryPublishEvent(this,
                 this, // asyncLogger: 0
@@ -403,7 +402,7 @@ public class AsyncLogger extends Logger implements EventTranslatorVararg<RingBuf
     public void translateTo(final RingBufferLogEvent event, final long sequence, final Object... args) {
         // Implementation note: candidate for optimization: exceeds 35 bytecodes.
         final AsyncLogger asyncLogger = (AsyncLogger) args[0];
-        final SourceLocation location = (SourceLocation) args[1];
+        final StackTraceElement location = (StackTraceElement) args[1];
         final String fqcn = (String) args[2];
         final Level level = (Level) args[3];
         final Marker marker = (Marker) args[4];
@@ -440,7 +439,7 @@ public class AsyncLogger extends Logger implements EventTranslatorVararg<RingBuf
         strategy.log(this, getName(), fqcn, marker, level, message, thrown);
     }
 
-    private void handleRingBufferFull(final SourceLocation location,
+    private void handleRingBufferFull(final StackTraceElement location,
                                       final String fqcn,
                                       final Level level,
                                       final Marker marker,
