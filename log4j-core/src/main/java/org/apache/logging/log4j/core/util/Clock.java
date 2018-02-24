@@ -17,13 +17,9 @@
 package org.apache.logging.log4j.core.util;
 
 /**
- * Provides the time stamp used in log events.
+ * @deprecated Use {@link org.apache.logging.log4j.core.time.Clock} instead
+ * @see org.apache.logging.log4j.core.time.Clock
  */
-public interface Clock {
-    /**
-     * Returns the time in milliseconds since the epoch.
-     *
-     * @return the time in milliseconds since the epoch
-     */
-    long currentTimeMillis();
+@Deprecated
+public interface Clock extends org.apache.logging.log4j.core.time.Clock {
 }

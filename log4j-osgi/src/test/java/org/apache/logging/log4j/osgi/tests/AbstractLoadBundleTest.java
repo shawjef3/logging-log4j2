@@ -21,73 +21,38 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
-import org.apache.logging.log4j.osgi.tests.junit.BundleTestInfo;
-import org.apache.logging.log4j.osgi.tests.junit.OsgiRule;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.launch.FrameworkFactory;
 
 /**
  * Tests a basic Log4J 'setup' in an OSGi container.
  */
-public abstract class AbstractLoadBundleTest {
-
-    private BundleContext bundleContext;
-
-    private final BundleTestInfo bundleTestInfo;
-
-    private Path here;
-    
-    @Rule
-    public OsgiRule osgi = new OsgiRule(getFactory());
-    /**
-     * Constructs a test for a given bundle.
-     */
-    public AbstractLoadBundleTest() {
-        super();
-        this.bundleTestInfo = new BundleTestInfo();
-    }
-
-    /**
-     * Called before each @Test.
-     */
-    @Before
-    public void before() throws BundleException {
-        bundleContext = osgi.getFramework().getBundleContext();
-        
-        here = Paths.get(".").toAbsolutePath().normalize();
-    }
+public abstract class AbstractLoadBundleTest extends AbstractOsgiTest {
 
     private Bundle getApiBundle() throws BundleException {
-        final Path apiPath = here.resolveSibling("log4j-api").resolve("target").resolve("log4j-api-" + bundleTestInfo.getVersion() + ".jar");
-        return bundleContext.installBundle(apiPath.toUri().toString());
+        final Path apiPath = getHere().resolveSibling("log4j-api").resolve("target").resolve(getBundleTestInfo().buildJarFileName("log4j-api"));
+        return getBundleContext().installBundle(apiPath.toUri().toString());
     }
 
 
     private Bundle getCoreBundle() throws BundleException {
-        final Path corePath = here.resolveSibling("log4j-core").resolve("target").resolve("log4j-core-" + bundleTestInfo.getVersion() + ".jar");
-        return bundleContext.installBundle(corePath.toUri().toString());
+        final Path corePath = getHere().resolveSibling("log4j-core").resolve("target").resolve(getBundleTestInfo().buildJarFileName("log4j-core"));
+        return getBundleContext().installBundle(corePath.toUri().toString());
     }
     
     private Bundle getDummyBundle() throws BundleException {
-        final Path dumyPath = here.resolveSibling("log4j-samples").resolve("configuration").resolve("target").resolve("log4j-samples-configuration-" + bundleTestInfo.getVersion() + ".jar");
-        return bundleContext.installBundle(dumyPath.toUri().toString());
+        final Path dumyPath = getHere().resolveSibling("log4j-samples").resolve("log4j-samples-configuration").resolve("target").resolve(getBundleTestInfo().buildJarFileName("log4j-samples-configuration"));
+        return getBundleContext().installBundle(dumyPath.toUri().toString());
     }
 
     private Bundle get12ApiBundle() throws BundleException {
-        final Path apiPath = here.resolveSibling("log4j-1.2-api").resolve("target").resolve("log4j-1.2-api-" + bundleTestInfo.getVersion() + ".jar");
-        return bundleContext.installBundle(apiPath.toUri().toString());
+        final Path apiPath = getHere().resolveSibling("log4j-1.2-api").resolve("target").resolve(getBundleTestInfo().buildJarFileName("log4j-1.2-api"));
+        return getBundleContext().installBundle(apiPath.toUri().toString());
     }
 
-    
-    protected abstract FrameworkFactory getFactory();
     
     private void log(final Bundle dummy) throws ReflectiveOperationException {
         // use reflection to log in the context of the dummy bundle
@@ -150,7 +115,7 @@ public abstract class AbstractLoadBundleTest {
      * Tests starting, then stopping, then restarting, then stopping, and finally uninstalling the API and Core bundles
      */
     @Test
-    public void testApiCoreStartStopStartStop() throws BundleException, ReflectiveOperationException {
+    public void testApiCoreStartStopStartStop() throws BundleException {
 
         final Bundle api = getApiBundle();
         final Bundle core = getCoreBundle();
@@ -314,7 +279,7 @@ public abstract class AbstractLoadBundleTest {
 
         core.stop();
         api.stop();
-        
+
         uninstall(api, core, compat);
     }
 

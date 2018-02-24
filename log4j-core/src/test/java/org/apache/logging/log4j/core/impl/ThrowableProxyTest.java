@@ -35,20 +35,21 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.plugins.convert.Base64Converter;
-import org.apache.logging.log4j.core.jackson.Log4jJsonObjectMapper;
-import org.apache.logging.log4j.core.jackson.Log4jXmlObjectMapper;
+import org.apache.logging.log4j.core.pattern.PlainTextRenderer;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.Test;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  *
@@ -94,6 +95,12 @@ public class ThrowableProxyTest {
         return true;
     }
 
+    private boolean lastLineContains(final String text, final String containedText) {
+        final String[] lines = text.split("\n");
+        final String lastLine = lines[lines.length-1];
+        return lastLine.contains(containedText);
+    }
+
     private void testIoContainer(final ObjectMapper objectMapper ) throws IOException {
         final Fixture expected = new Fixture();
         final String s = objectMapper.writeValueAsString(expected);
@@ -104,16 +111,6 @@ public class ThrowableProxyTest {
         assertEquals(expected.proxy.getCommonElementCount(), actual.proxy.getCommonElementCount());
         assertArrayEquals(expected.proxy.getExtendedStackTrace(), actual.proxy.getExtendedStackTrace());
         assertEquals(expected.proxy, actual.proxy);
-    }
-
-    @Test
-    public void testIoContainerAsJson() throws IOException {
-        testIoContainer(new Log4jJsonObjectMapper());
-    }
-
-    @Test
-    public void testIoContainerAsXml() throws IOException {
-        testIoContainer(new Log4jXmlObjectMapper());
     }
 
     /**
@@ -294,12 +291,24 @@ public class ThrowableProxyTest {
     }
 
     @Test
+    public void testSeparator_getExtendedStackTraceAsString() throws Exception {
+        final Throwable throwable = new IllegalArgumentException("This is a test");
+        final ThrowableProxy proxy = new ThrowableProxy(throwable);
+
+        final String separator = " | ";
+        final String extendedStackTraceAsString = proxy.getExtendedStackTraceAsString(null,
+                PlainTextRenderer.getInstance(), " | ", Strings.EMPTY);
+        assertTrue(extendedStackTraceAsString, allLinesContain(extendedStackTraceAsString, separator));
+    }
+
+    @Test
     public void testSuffix_getExtendedStackTraceAsString() throws Exception {
         final Throwable throwable = new IllegalArgumentException("This is a test");
         final ThrowableProxy proxy = new ThrowableProxy(throwable);
 
         final String suffix = "some suffix";
-        assertTrue(allLinesContain(proxy.getExtendedStackTraceAsString(suffix), suffix));
+        final String extendedStackTraceAsString = proxy.getExtendedStackTraceAsString(suffix);
+        assertTrue(extendedStackTraceAsString, lastLineContains(extendedStackTraceAsString, suffix));
     }
 
     @Test

@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,11 +40,16 @@ import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.ThreadContext.ContextStack;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.convert.Base64Converter;
-import org.apache.logging.log4j.core.util.Clock;
-import org.apache.logging.log4j.core.util.ClockFactory;
-import org.apache.logging.log4j.core.util.ClockFactoryTest;
-import org.apache.logging.log4j.core.util.DummyNanoClock;
-import org.apache.logging.log4j.message.*;
+import org.apache.logging.log4j.core.time.Clock;
+import org.apache.logging.log4j.core.time.ClockFactory;
+import org.apache.logging.log4j.core.time.ClockFactoryTest;
+import org.apache.logging.log4j.core.time.internal.DummyNanoClock;
+import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.message.ObjectMessage;
+import org.apache.logging.log4j.message.ReusableMessage;
+import org.apache.logging.log4j.message.ReusableObjectMessage;
+import org.apache.logging.log4j.message.SimpleMessage;
+import org.apache.logging.log4j.util.FilteredObjectInputStream;
 import org.apache.logging.log4j.util.SortedArrayStringMap;
 import org.apache.logging.log4j.util.StringMap;
 import org.apache.logging.log4j.util.Strings;
@@ -164,7 +168,7 @@ public class Log4jLogEventTest {
 
     private Log4jLogEvent deserialize(final byte[] binary) throws IOException, ClassNotFoundException {
         final ByteArrayInputStream inArr = new ByteArrayInputStream(binary);
-        final ObjectInputStream in = new ObjectInputStream(inArr);
+        final ObjectInputStream in = new FilteredObjectInputStream(inArr);
         final Log4jLogEvent result = (Log4jLogEvent) in.readObject();
         return result;
     }
@@ -258,18 +262,18 @@ public class Log4jLogEventTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testBuilderCorrectlyCopiesAllEventAttributes() {
-        final Map<String, String> contextMap = new HashMap<>();
-        contextMap.put("A", "B");
+        final StringMap contextData = ContextDataFactory.createContextData();
+        contextData.putValue("A", "B");
         final ContextStack contextStack = ThreadContext.getImmutableStack();
         final Exception exception = new Exception("test");
         final Marker marker = MarkerManager.getMarker("EVENTTEST");
         final Message message = new SimpleMessage("foo");
-        final StackTraceElement source = new StackTraceElement("A", "B", "file", 123);
+        final StackTraceElement stackTraceElement = new StackTraceElement("A", "B", "file", 123);
         final String fqcn = "qualified";
         final String name = "Ceci n'est pas une pipe";
         final String threadName = "threadName";
         final Log4jLogEvent event = Log4jLogEvent.newBuilder() //
-                .setContextMap(contextMap) //
+                .setContextData(contextData) //
                 .setContextStack(contextStack) //
                 .setEndOfBatch(true) //
                 .setIncludeLocation(true) //
@@ -279,13 +283,13 @@ public class Log4jLogEventTest {
                 .setMarker(marker) //
                 .setMessage(message) //
                 .setNanoTime(1234567890L) //
-                .setSource(source) //
+                .setSource(stackTraceElement) //
                 .setThreadName(threadName) //
                 .setThrown(exception) //
                 .setTimeMillis(987654321L)
                 .build();
 
-        assertEquals(contextMap, event.getContextMap());
+        assertEquals(contextData, event.getContextData());
         assertSame(contextStack, event.getContextStack());
         assertEquals(true, event.isEndOfBatch());
         assertEquals(true, event.isIncludeLocation());
@@ -295,7 +299,7 @@ public class Log4jLogEventTest {
         assertSame(marker, event.getMarker());
         assertSame(message, event.getMessage());
         assertEquals(1234567890L, event.getNanoTime());
-        assertSame(source, event.getSource());
+        assertSame(stackTraceElement, event.getSource());
         assertSame(threadName, event.getThreadName());
         assertSame(exception, event.getThrown());
         assertEquals(987654321L, event.getTimeMillis());
@@ -328,7 +332,7 @@ public class Log4jLogEventTest {
                 .setMarker(marker) //
                 .setMessage(message) //
                 .setNanoTime(1234567890L) //
-                .setSource(source) //
+                .setSource(stackTraceElement) //
                 .setThreadName(threadName) //
                 .setThrown(exception) //
                 .setTimeMillis(987654321L)
@@ -362,6 +366,7 @@ public class Log4jLogEventTest {
         final Exception exception = new Exception("test");
         final Marker marker = MarkerManager.getMarker("EVENTTEST");
         final Message message = new SimpleMessage("foo");
+        new StackTraceElement("A", "B", "file", 123);
         final String fqcn = "qualified";
         final String name = "Ceci n'est pas une pipe";
         final String threadName = "threadName";
@@ -370,7 +375,7 @@ public class Log4jLogEventTest {
         event.setContextStack(contextStack);
         event.setEndOfBatch(true);
         event.setIncludeLocation(true);
-        //event.setSource(source); // cannot be explicitly set
+        //event.setSource(stackTraceElement); // cannot be explicitly set
         event.setLevel(Level.FATAL);
         event.setLoggerFqcn(fqcn);
         event.setLoggerName(name);
@@ -391,7 +396,7 @@ public class Log4jLogEventTest {
         assertSame(marker, event.getMarker());
         assertSame(message, event.getMessage());
         assertEquals(1234567890L, event.getNanoTime());
-        //assertSame(source, event.getSource()); // don't invoke
+        //assertSame(stackTraceElement, event.getSource()); // don't invoke
         assertSame(threadName, event.getThreadName());
         assertSame(exception, event.getThrown());
         assertEquals(987654321L, event.getTimeMillis());
@@ -407,7 +412,7 @@ public class Log4jLogEventTest {
         assertSame(marker, e2.getMarker());
         assertSame(message, e2.getMessage());
         assertEquals(1234567890L, e2.getNanoTime());
-        //assertSame(source, e2.getSource()); // don't invoke
+        //assertSame(stackTraceElement, e2.getSource()); // don't invoke
         assertSame(threadName, e2.getThreadName());
         assertSame(exception, e2.getThrown());
         assertEquals(987654321L, e2.getTimeMillis());
@@ -423,19 +428,19 @@ public class Log4jLogEventTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testEquals() {
-        final Map<String, String> contextMap = new HashMap<>();
-        contextMap.put("A", "B");
+        final StringMap contextData = ContextDataFactory.createContextData();
+        contextData.putValue("A", "B");
         ThreadContext.push("first");
         final ContextStack contextStack = ThreadContext.getImmutableStack();
         final Exception exception = new Exception("test");
         final Marker marker = MarkerManager.getMarker("EVENTTEST");
         final Message message = new SimpleMessage("foo");
-        final StackTraceElement source = new StackTraceElement("A", "B", "file", 123);
+        final StackTraceElement stackTraceElement = new StackTraceElement("A", "B", "file", 123);
         final String fqcn = "qualified";
         final String name = "Ceci n'est pas une pipe";
         final String threadName = "threadName";
         final Log4jLogEvent event = Log4jLogEvent.newBuilder() //
-                .setContextMap(contextMap) //
+                .setContextData(contextData) //
                 .setContextStack(contextStack) //
                 .setEndOfBatch(true) //
                 .setIncludeLocation(true) //
@@ -445,13 +450,13 @@ public class Log4jLogEventTest {
                 .setMarker(marker) //
                 .setMessage(message) //
                 .setNanoTime(1234567890L) //
-                .setSource(source) //
+                .setSource(stackTraceElement) //
                 .setThreadName(threadName) //
                 .setThrown(exception) //
                 .setTimeMillis(987654321L)
                 .build();
 
-        assertEquals(contextMap, event.getContextMap());
+        assertEquals(contextData, event.getContextData());
         assertSame(contextStack, event.getContextStack());
         assertEquals(true, event.isEndOfBatch());
         assertEquals(true, event.isIncludeLocation());
@@ -470,7 +475,7 @@ public class Log4jLogEventTest {
         assertEquals("copy constructor builder", event2, event);
         assertEquals("same hashCode", event2.hashCode(), event.hashCode());
 
-        assertEquals(contextMap, event2.getContextMap());
+        assertEquals(contextData, event2.getContextData());
         assertSame(contextStack, event2.getContextStack());
         assertEquals(true, event2.isEndOfBatch());
         assertEquals(true, event2.isIncludeLocation());
@@ -480,14 +485,14 @@ public class Log4jLogEventTest {
         assertSame(marker, event2.getMarker());
         assertSame(message, event2.getMessage());
         assertEquals(1234567890L, event2.getNanoTime());
-        assertSame(source, event2.getSource());
+        assertSame(stackTraceElement, event2.getSource());
         assertSame(threadName, event2.getThreadName());
         assertSame(exception, event2.getThrown());
         assertEquals(987654321L, event2.getTimeMillis());
 
-        final Map<String, String> differentMap = Collections.emptyMap();
-        different("different contextMap", builder(event).setContextMap(differentMap), event);
-        different("null contextMap", builder(event).setContextMap(null), event);
+        final StringMap differentMap = ContextDataFactory.emptyFrozenContextData();
+        different("different contextMap", builder(event).setContextData(differentMap), event);
+        different("null contextMap", builder(event).setContextData(null), event);
 
         ThreadContext.push("abc");
         final ContextStack contextStack2 = ThreadContext.getImmutableStack();
@@ -523,8 +528,8 @@ public class Log4jLogEventTest {
         different("different nanoTime", builder(event).setNanoTime(135), event);
         different("different milliTime", builder(event).setTimeMillis(137), event);
 
-        final StackTraceElement source2 = new StackTraceElement("XXX", "YYY", "file", 123);
-        different("different source", builder(event).setSource(source2), event);
+        final StackTraceElement stack2 = new StackTraceElement("XXX", "YYY", "file", 123);
+        different("different source", builder(event).setSource(stack2), event);
         different("null source", builder(event).setSource(null), event);
 
         different("different threadname", builder(event).setThreadName("different"), event);

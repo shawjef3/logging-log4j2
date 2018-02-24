@@ -16,10 +16,13 @@
  */
 package org.apache.logging.log4j.core.layout;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -30,15 +33,14 @@ import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.apache.logging.log4j.spi.DefaultThreadContextStack;
+import org.apache.logging.log4j.util.StringMap;
 
-import static org.junit.Assert.*;
-
-class LogEventFixtures {
+public class LogEventFixtures {
 
     /**
      * @return a log event that uses all the bells and whistles, features, nooks and crannies
      */
-    static Log4jLogEvent createLogEvent() {
+    public static Log4jLogEvent createLogEvent() {
         final Marker cMarker = MarkerManager.getMarker("Marker1");
         final Marker pMarker1 = MarkerManager.getMarker("ParentMarker1");
         final Marker pMarker2 = MarkerManager.getMarker("ParentMarker2");
@@ -57,9 +59,9 @@ class LogEventFixtures {
         ioException.addSuppressed(new IndexOutOfBoundsException("I am suppressed exception 1"));
         ioException.addSuppressed(new IndexOutOfBoundsException("I am suppressed exception 2"));
         final ThrowableProxy throwableProxy = new ThrowableProxy(ioException);
-        final Map<String, String> contextMap = new HashMap<>();
-        contextMap.put("MDC.A", "A_Value");
-        contextMap.put("MDC.B", "B_Value");
+        final StringMap contextData = ContextDataFactory.createContextData();
+        contextData.putValue("MDC.A", "A_Value");
+        contextData.putValue("MDC.B", "B_Value");
         final DefaultThreadContextStack contextStack = new DefaultThreadContextStack(true);
         contextStack.clear();
         contextStack.push("stack_msg1");
@@ -72,7 +74,7 @@ class LogEventFixtures {
                 .setMessage(new SimpleMessage("Msg")) //
                 .setThrown(ioException) //
                 .setThrownProxy(throwableProxy) //
-                .setContextMap(contextMap) //
+                .setContextData(contextData) //
                 .setContextStack(contextStack) //
                 .setThreadName("MyThreadName") //
                 .setSource(source) //
@@ -82,7 +84,7 @@ class LogEventFixtures {
     }
 
     @SuppressWarnings("deprecation")
-    static void assertEqualLogEvents(final LogEvent expected, final LogEvent actual, final boolean includeSource,
+    public static void assertEqualLogEvents(final LogEvent expected, final LogEvent actual, final boolean includeSource,
             final boolean includeContext, final boolean includeStacktrace) {
         assertEquals(expected.getClass(), actual.getClass());
         assertEquals(includeContext ? expected.getContextData() : ContextDataFactory.createContextData(), actual.getContextData());

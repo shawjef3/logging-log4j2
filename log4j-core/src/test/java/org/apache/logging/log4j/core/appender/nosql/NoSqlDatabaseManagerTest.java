@@ -16,8 +16,16 @@
  */
 package org.apache.logging.log4j.core.appender.nosql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
+
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +37,7 @@ import org.apache.logging.log4j.MarkerManager;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AppenderLoggingException;
+import org.apache.logging.log4j.core.impl.ContextDataFactory;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.junit.ThreadContextStackRule;
 import org.apache.logging.log4j.message.Message;
@@ -43,12 +52,6 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NoSqlDatabaseManagerTest {
@@ -101,7 +104,7 @@ public class NoSqlDatabaseManagerTest {
         try (final NoSqlDatabaseManager<?> manager = NoSqlDatabaseManager.getNoSqlDatabaseManager("name", 0,
             provider)) {
             expectedException.expect(AppenderLoggingException.class);
-            manager.writeInternal(mock(LogEvent.class));
+            manager.writeInternal(mock(LogEvent.class), null);
         }
     }
 
@@ -117,7 +120,7 @@ public class NoSqlDatabaseManagerTest {
             then(provider).should().getConnection();
 
             expectedException.expect(AppenderLoggingException.class);
-            manager.writeInternal(mock(LogEvent.class));
+            manager.writeInternal(mock(LogEvent.class), null);
         }
     }
 
@@ -144,7 +147,7 @@ public class NoSqlDatabaseManagerTest {
                 .setTimeMillis(1234567890123L)
                 .build();
 
-            manager.writeInternal(event);
+            manager.writeInternal(event, null);
             then(connection).should().insertObject(captor.capture());
 
             final NoSqlObject<Map<String, Object>> inserted = captor.getValue();
@@ -172,9 +175,9 @@ public class NoSqlDatabaseManagerTest {
 
             assertNull("The thrown should be null.", object.get("thrown"));
 
-            assertTrue("The context map should be empty.", ((Map) object.get("contextMap")).isEmpty());
+            assertTrue("The context map should be empty.", ((Map<?, ?>) object.get("contextMap")).isEmpty());
 
-            assertTrue("The context stack should be null.", ((Collection) object.get("contextStack")).isEmpty());
+            assertTrue("The context stack should be null.", ((Collection<?>) object.get("contextStack")).isEmpty());
 
         }
     }
@@ -212,11 +215,11 @@ public class NoSqlDatabaseManagerTest {
                 .setThreadPriority(1)
                 .setTimeMillis(987654321564L)
                 .setThrown(exception)
-                .setContextMap(context)
+                .setContextData(ContextDataFactory.createContextData(context))
                 .setContextStack(stack)
                 .build();
 
-            manager.writeInternal(event);
+            manager.writeInternal(event, null);
             then(connection).should().insertObject(captor.capture());
 
             final NoSqlObject<Map<String, Object>> inserted = captor.getValue();
@@ -290,7 +293,7 @@ public class NoSqlDatabaseManagerTest {
             then(provider).should().getConnection();
 
             final IOException exception1 = new IOException("This is the cause.");
-            final SQLException exception2 = new SQLException("This is the result.", exception1);
+            final IllegalStateException exception2 = new IllegalStateException("This is the result.", exception1);
             final Map<String, String> context = new HashMap<>();
             context.put("hello", "world");
             context.put("user", "pass");
@@ -313,11 +316,11 @@ public class NoSqlDatabaseManagerTest {
                 .setThreadPriority(1)
                 .setTimeMillis(987654321564L)
                 .setThrown(exception2)
-                .setContextMap(context)
+                .setContextData(ContextDataFactory.createContextData(context))
                 .setContextStack(stack)
                 .build();
 
-            manager.writeInternal(event);
+            manager.writeInternal(event, null);
             then(connection).should().insertObject(captor.capture());
 
             final NoSqlObject<Map<String, Object>> inserted = captor.getValue();
@@ -376,7 +379,7 @@ public class NoSqlDatabaseManagerTest {
             assertTrue("The thrown should be a map.", object.get("thrown") instanceof Map);
             @SuppressWarnings("unchecked")
             final Map<String, Object> thrown = (Map<String, Object>) object.get("thrown");
-            assertEquals("The thrown type is not correct.", "java.sql.SQLException", thrown.get("type"));
+            assertEquals("The thrown type is not correct.", "java.lang.IllegalStateException", thrown.get("type"));
             assertEquals("The thrown message is not correct.", "This is the result.", thrown.get("message"));
             assertTrue("The thrown stack trace should be a list.", thrown.get("stackTrace") instanceof List);
             @SuppressWarnings("unchecked")

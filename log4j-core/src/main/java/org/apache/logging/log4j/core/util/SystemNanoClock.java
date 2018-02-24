@@ -16,15 +16,19 @@
  */
 package org.apache.logging.log4j.core.util;
 
+import org.apache.logging.log4j.core.time.NanoClock;
+
 /**
- * Implementation of the {@code NanoClock} interface that returns the system nano time.
+ * @deprecated Use {@link org.apache.logging.log4j.core.time.SystemNanoClock} instead.
  */
+@Deprecated
 public final class SystemNanoClock implements NanoClock {
 
     /**
-     * Returns the system high-resolution time.
-     * @return the result of calling {@code System.nanoTime()}
+     * @see org.apache.logging.log4j.core.time.SystemNanoClock#nanoTime()
+     * @deprecated use {@link org.apache.logging.log4j.core.time.SystemNanoClock} instead.
      */
+    @Deprecated
     @Override
     public long nanoTime() {
         return System.nanoTime();

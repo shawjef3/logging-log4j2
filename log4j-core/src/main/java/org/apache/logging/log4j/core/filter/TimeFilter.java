@@ -30,8 +30,8 @@ import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
-import org.apache.logging.log4j.core.util.Clock;
-import org.apache.logging.log4j.core.util.ClockFactory;
+import org.apache.logging.log4j.core.time.Clock;
+import org.apache.logging.log4j.core.time.ClockFactory;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.PerformanceSensitive;
 
@@ -218,7 +218,7 @@ public final class TimeFilter extends AbstractFilter {
     }
 
     /**
-     * Create a TimeFilter.
+     * Creates a TimeFilter.
      * @param start The start time.
      * @param end The end time.
      * @param tz timezone.
@@ -226,6 +226,7 @@ public final class TimeFilter extends AbstractFilter {
      * @param mismatch Action to perform if the action does not match.
      * @return A TimeFilter.
      */
+    // TODO Consider refactoring to use AbstractFilter.AbstractFilterBuilder
     @PluginFactory
     public static TimeFilter createFilter(
             @PluginAttribute("start") final String start,
