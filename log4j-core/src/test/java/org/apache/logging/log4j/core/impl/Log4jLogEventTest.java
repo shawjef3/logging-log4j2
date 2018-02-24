@@ -317,7 +317,7 @@ public class Log4jLogEventTest {
         final Exception exception = new Exception("test");
         final Marker marker = MarkerManager.getMarker("EVENTTEST");
         final Message message = new SimpleMessage("foo");
-        final StackTraceElement source = new StackTraceElement("A", "B", "file", 123);
+        final StackTraceElement stackTraceElement = new StackTraceElement("A", "B", "file", 123);
         final String fqcn = "qualified";
         final String name = "Ceci n'est pas une pipe";
         final String threadName = "threadName";
@@ -348,7 +348,7 @@ public class Log4jLogEventTest {
         assertSame(marker, event.getMarker());
         assertSame(message, event.getMessage());
         assertEquals(1234567890L, event.getNanoTime());
-        assertSame(source, event.getSource());
+        assertSame(stackTraceElement, event.getSource());
         assertSame(threadName, event.getThreadName());
         assertSame(exception, event.getThrown());
         assertEquals(987654321L, event.getTimeMillis());
@@ -466,7 +466,7 @@ public class Log4jLogEventTest {
         assertSame(marker, event.getMarker());
         assertSame(message, event.getMessage());
         assertEquals(1234567890L, event.getNanoTime());
-        assertSame(source, event.getSource());
+        assertSame(stackTraceElement, event.getSource());
         assertSame(threadName, event.getThreadName());
         assertSame(exception, event.getThrown());
         assertEquals(987654321L, event.getTimeMillis());
