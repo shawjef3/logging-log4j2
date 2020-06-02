@@ -979,6 +979,11 @@ public class AbstractLoggerTest {
         interface FormattedMessageSupplier {
             String getFormattedMessage();
         }
+
+        @Override
+        public StackTraceElement getSource() {
+            return null;
+        }
     }
 
     private static class CountingLogger extends AbstractLogger {
