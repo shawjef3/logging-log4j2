@@ -947,7 +947,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param result The result being returned from the method call.
      * @return the return value passed to this method.
      */
-    protected <R> R exit(final SourceLocation source, final String fqcn, final R result) {
+    protected <R> R exit(final StackTraceElement source, final String fqcn, final R result) {
         if (isEnabled(Level.TRACE, EXIT_MARKER, (CharSequence) null, null)) {
             logMessageSafely(fqcn, Level.TRACE, EXIT_MARKER, exitMsg(source, null, result), null);
         }
@@ -963,14 +963,14 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param result The result being returned from the method call.
      * @return the return value passed to this method.
      */
-    protected <R> R exit(final SourceLocation source, final String fqcn, final String format, final R result) {
+    protected <R> R exit(final StackTraceElement source, final String fqcn, final String format, final R result) {
         if (isEnabled(Level.TRACE, EXIT_MARKER, (CharSequence) null, null)) {
             logMessageSafely(fqcn, Level.TRACE, EXIT_MARKER, exitMsg(source, format, result), null);
         }
         return result;
     }
 
-    protected Message exitMsg(final SourceLocation source, final String format, final Object result) {
+    protected Message exitMsg(final StackTraceElement source, final String format, final Object result) {
         if (result == null) {
             if (format == null) {
                 return messageFactory.newMessage(source, "Exit");
@@ -2241,21 +2241,21 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
 
     @Override
     public <T extends Throwable> T throwing(final T t) {
-        return throwing((SourceLocation) null, t);
+        return throwing((StackTraceElement) null, t);
     }
 
     @Override
-    public <T extends Throwable> T throwing(SourceLocation source, T t) {
+    public <T extends Throwable> T throwing(StackTraceElement source, T t) {
         return throwing(source, FQCN, Level.ERROR, t);
     }
 
     @Override
     public <T extends Throwable> T throwing(final Level level, final T t) {
-        return throwing((SourceLocation) null, level, t);
+        return throwing((StackTraceElement) null, level, t);
     }
 
     @Override
-    public <T extends Throwable> T throwing(SourceLocation source, Level level, T t) {
+    public <T extends Throwable> T throwing(StackTraceElement source, Level level, T t) {
         return throwing(source, FQCN, level, t);
     }
 
@@ -2268,14 +2268,14 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
      * @param t The Throwable.
      * @return the Throwable.
      */
-    protected <T extends Throwable> T throwing(final SourceLocation source, final String fqcn, final Level level, final T t) {
+    protected <T extends Throwable> T throwing(final StackTraceElement source, final String fqcn, final Level level, final T t) {
         if (isEnabled(level, THROWING_MARKER, (Object) null, null)) {
             logMessageSafely(fqcn, level, THROWING_MARKER, throwingMsg(source, t), t);
         }
         return t;
     }
 
-    protected Message throwingMsg(final SourceLocation source, final Throwable t) {
+    protected Message throwingMsg(final StackTraceElement source, final Throwable t) {
         return messageFactory.newMessage(source, THROWING);
     }
 
@@ -2536,11 +2536,11 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
 
     @Override
     public EntryMessage traceEntry() {
-        return traceEntry((SourceLocation) null);
+        return traceEntry((StackTraceElement) null);
     }
 
     @Override
-    public EntryMessage traceEntry(final SourceLocation source) {
+    public EntryMessage traceEntry(final StackTraceElement source) {
         return enter(source, FQCN, null, (Object[]) null);
     }
 
@@ -2550,7 +2550,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public EntryMessage traceEntry(final SourceLocation source, final String format, final Object... params) {
+    public EntryMessage traceEntry(final StackTraceElement source, final String format, final Object... params) {
         return enter(source, FQCN, format, params);
     }
 
@@ -2560,7 +2560,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public EntryMessage traceEntry(final SourceLocation source, final Supplier<?>... paramSuppliers) {
+    public EntryMessage traceEntry(final StackTraceElement source, final Supplier<?>... paramSuppliers) {
         return enter(source, FQCN, null, paramSuppliers);
     }
 
@@ -2570,7 +2570,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public EntryMessage traceEntry(final SourceLocation source, final String format, final Supplier<?>... paramSuppliers) {
+    public EntryMessage traceEntry(final StackTraceElement source, final String format, final Supplier<?>... paramSuppliers) {
         return enter(source, FQCN, format, paramSuppliers);
     }
 
@@ -2580,27 +2580,27 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public EntryMessage traceEntry(final SourceLocation source, final Message message) {
+    public EntryMessage traceEntry(final StackTraceElement source, final Message message) {
         return enter(source, FQCN, message);
     }
 
     @Override
     public void traceExit() {
-        traceExit((SourceLocation) null);
+        traceExit((StackTraceElement) null);
     }
 
     @Override
-    public void traceExit(final SourceLocation source) {
+    public void traceExit(final StackTraceElement source) {
         exit(source, FQCN, null, null);
     }
 
     @Override
     public <R> R traceExit(final R result) {
-        return traceExit((SourceLocation) null, result);
+        return traceExit((StackTraceElement) null, result);
     }
 
     @Override
-    public <R> R traceExit(final SourceLocation source, final R result) {
+    public <R> R traceExit(final StackTraceElement source, final R result) {
         return exit(source, FQCN, null, result);
     }
 
@@ -2610,17 +2610,17 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public <R> R traceExit(final SourceLocation source, final String format, final R result) {
+    public <R> R traceExit(final StackTraceElement source, final String format, final R result) {
         return exit(source, FQCN, format, result);
     }
 
     @Override
     public void traceExit(final EntryMessage message) {
-        traceExit((SourceLocation) null, message);
+        traceExit((StackTraceElement) null, message);
     }
 
     @Override
-    public void traceExit(final SourceLocation source, final EntryMessage message) {
+    public void traceExit(final StackTraceElement source, final EntryMessage message) {
         // If the message is null, traceEnter returned null because flow logging was disabled, we can optimize out calling isEnabled().
         if (message != null && isEnabled(Level.TRACE, EXIT_MARKER, message, null)) {
             logMessageSafely(FQCN, Level.TRACE, EXIT_MARKER, flowMessageFactory.newExitMessage(source, message), null);
@@ -2633,7 +2633,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public <R> R traceExit(final SourceLocation source, final EntryMessage message, final R result) {
+    public <R> R traceExit(final StackTraceElement source, final EntryMessage message, final R result) {
         // If the message is null, traceEnter returned null because flow logging was disabled, we can optimize out calling isEnabled().
         if (message != null && isEnabled(Level.TRACE, EXIT_MARKER, message, null)) {
             logMessageSafely(FQCN, Level.TRACE, EXIT_MARKER, flowMessageFactory.newExitMessage(source, result, message), null);
@@ -2647,7 +2647,7 @@ public abstract class AbstractLogger implements ExtendedLogger, LocationAwareLog
     }
 
     @Override
-    public <R> R traceExit(final SourceLocation source, final Message message, final R result) {
+    public <R> R traceExit(final StackTraceElement source, final Message message, final R result) {
         // If the message is null, traceEnter returned null because flow logging was disabled, we can optimize out calling isEnabled().
         if (message != null && isEnabled(Level.TRACE, EXIT_MARKER, message, null)) {
             logMessageSafely(FQCN, Level.TRACE, EXIT_MARKER, flowMessageFactory.newExitMessage(source, result, message), null);

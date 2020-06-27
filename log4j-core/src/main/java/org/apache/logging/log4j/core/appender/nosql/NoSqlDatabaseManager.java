@@ -25,7 +25,6 @@ import org.apache.logging.log4j.core.appender.AppenderLoggingException;
 import org.apache.logging.log4j.core.appender.ManagerFactory;
 import org.apache.logging.log4j.core.appender.db.AbstractDatabaseManager;
 import org.apache.logging.log4j.core.util.Closer;
-import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.message.MapMessage;
 import org.apache.logging.log4j.util.BiConsumer;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
@@ -100,7 +99,7 @@ public final class NoSqlDatabaseManager<W> extends AbstractDatabaseManager {
         entity.set("loggerName", event.getLoggerName());
         entity.set("message", event.getMessage() == null ? null : event.getMessage().getFormattedMessage());
 
-        final SourceLocation source = event.getSource();
+        final StackTraceElement source = event.getSource();
         if (source == null) {
             entity.set("source", (Object) null);
         } else {
@@ -207,7 +206,7 @@ public final class NoSqlDatabaseManager<W> extends AbstractDatabaseManager {
         return elementEntity;
     }
 
-    private NoSqlObject<W> convertSourceLocation(final SourceLocation element) {
+    private NoSqlObject<W> convertSourceLocation(final StackTraceElement element) {
         final NoSqlObject<W> elementEntity = this.connection.createObject();
         elementEntity.set("className", element.getClassName());
         elementEntity.set("methodName", element.getMethodName());

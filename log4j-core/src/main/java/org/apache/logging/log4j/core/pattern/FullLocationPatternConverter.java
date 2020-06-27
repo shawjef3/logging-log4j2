@@ -19,7 +19,6 @@ package org.apache.logging.log4j.core.pattern;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.impl.LocationAware;
-import org.apache.logging.log4j.message.SourceLocation;
 
 /**
  * Format the event's line location information.
@@ -55,7 +54,7 @@ public final class FullLocationPatternConverter extends LogEventPatternConverter
      */
     @Override
     public void format(final LogEvent event, final StringBuilder output) {
-        final SourceLocation element = event.getSource();
+        final StackTraceElement element = event.getSource();
 
         if (element != null) {
             output.append(element.toString());

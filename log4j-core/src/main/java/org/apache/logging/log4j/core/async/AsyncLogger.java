@@ -37,7 +37,6 @@ import org.apache.logging.log4j.core.util.NanoClock;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.ReusableMessage;
-import org.apache.logging.log4j.message.SourceLocation;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.StackLocatorUtil;
 import org.apache.logging.log4j.util.StringMap;
@@ -232,7 +231,7 @@ public class AsyncLogger extends Logger implements EventTranslatorVararg<RingBuf
     }
 
     private void handleRingBufferFull(final RingBufferLogEventTranslator translator) {
-        if (AbstractLogger.getRecursionDepth() > 1) { // LOG4J2-1518, LOG4J2-2031
+        if (Logger.getRecursionDepth() > 1) { // LOG4J2-1518, LOG4J2-2031
             // If queue is full AND we are in a recursive call, call appender directly to prevent deadlock
             AsyncQueueFullMessageUtil.logWarningToStatusLogger();
             logMessageInCurrentThread(translator.fqcn, translator.level, translator.marker, translator.message,
@@ -445,7 +444,7 @@ public class AsyncLogger extends Logger implements EventTranslatorVararg<RingBuf
                                       final Marker marker,
                                       final Message msg,
                                       final Throwable thrown) {
-        if (AbstractLogger.getRecursionDepth() > 1) { // LOG4J2-1518, LOG4J2-2031
+        if (Logger.getRecursionDepth() > 1) { // LOG4J2-1518, LOG4J2-2031
             // If queue is full AND we are in a recursive call, call appender directly to prevent deadlock
             AsyncQueueFullMessageUtil.logWarningToStatusLogger();
             logMessageInCurrentThread(fqcn, level, marker, msg, thrown);
